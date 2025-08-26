@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 
 @Service
 public class AccountService {
@@ -44,6 +45,7 @@ public class AccountService {
         user.setUsername(username);
         user.setPassword(sha256Hex(password));
         user.setName(name);
+        user.setRegisterTime(LocalDateTime.now());
         int result = accountMapper.register(user);
         if (result <= 0 || user.getId() == null) {
             throw new RuntimeException("注册失败");

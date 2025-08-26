@@ -14,11 +14,11 @@ public interface AccountMapper {
     Integer checkUsernameExist(@Param("username") String username);
 
     // 注册用户，返回受影响行数，并回填自增ID到 user.id
-    @Insert("INSERT INTO `user` (username, password, name) VALUES (#{username}, #{password}, #{name})")
+    @Insert("INSERT INTO `user` (username, password, name, registerTime) VALUES (#{username}, #{password}, #{name}, #{registerTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int register(User user);
 
     // 根据用户名查询用户信息
-    @Select("SELECT id, username, password, name FROM `user` WHERE username = #{username}")
+    @Select("SELECT id, username, password, name, tel, registerTime, avatar FROM `user` WHERE username = #{username}")
     User findByUsername(@Param("username") String username);
 }

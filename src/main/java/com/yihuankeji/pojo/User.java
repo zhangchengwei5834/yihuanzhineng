@@ -5,6 +5,9 @@ public class User {
     private String username;
     private String password;
     private String name;
+    private String tel;
+    private java.time.LocalDateTime registerTime;
+    private byte[] avatar; 
 
     public Integer getId() {
         return id;
@@ -36,5 +39,29 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public java.time.LocalDateTime getRegisterTime() {
+        return registerTime;
+    }
+
+    public void setRegisterTime(java.time.LocalDateTime registerTime) {
+        this.registerTime = registerTime;
+    }
+
+    public byte[] getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(byte[] avatar) {
+        this.avatar = avatar;
     }
 }
