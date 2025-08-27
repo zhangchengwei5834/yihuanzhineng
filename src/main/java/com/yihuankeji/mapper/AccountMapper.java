@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 
 @Mapper
 public interface AccountMapper {
@@ -21,4 +23,10 @@ public interface AccountMapper {
     // 根据用户名查询用户信息
     @Select("SELECT id, username, password, name, tel, registerTime, avatar FROM `user` WHERE username = #{username}")
     User findByUsername(@Param("username") String username);
+
+    // 更新用户密码
+    @Update("UPDATE `user` SET password = #{newPassword} WHERE username = #{username}")
+    int updatePassword(@Param("username") String username, @Param("newPassword") String newPassword);
+
+
 }

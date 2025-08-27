@@ -16,29 +16,20 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8080", "http://127.0.0.1:8080")
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtInterceptor)
-                // 拦截所有请求
-                .addPathPatterns("/**")
-                // 排除不需要token验证的路径
-                .excludePathPatterns(
-                        "/user/register",    // 注册接口
-                        "/user/login",       // 登录接口
-                        "/error",            // 错误页面
-                        "/actuator/**",      // Spring Boot Actuator端点
-                        "/favicon.ico",      // 网站图标
-                        "/static/**",        // 静态资源
-                        "/css/**",           // CSS文件
-                        "/js/**",            // JavaScript文件
-                        "/images/**"         // 图片文件
-                );
+         registry.addInterceptor(jwtInterceptor)
+                 .addPathPatterns("/**")
+                 .excludePathPatterns(
+                         "/user/register",    // 注册接口
+                         "/user/login"      // 登录接口
+                 );
     }
 }

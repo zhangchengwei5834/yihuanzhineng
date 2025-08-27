@@ -2,6 +2,7 @@ package com.yihuankeji.controller;
 
 import com.yihuankeji.dto.AuthResponse;
 import com.yihuankeji.dto.AuthRequest;
+import com.yihuankeji.dto.ChangePasswordRequest;
 import com.yihuankeji.pojo.User;
 import com.yihuankeji.service.AccountService;
 import com.yihuankeji.util.JwtUtil;
@@ -10,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDateTime;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/user")
@@ -85,12 +88,51 @@ public class AccountController {
         userInfo.put("tel", user.getTel());
         userInfo.put("registerTime", user.getRegisterTime());
         userInfo.put("avatar", user.getAvatar());
-        
         // 创建响应对象
         Map<String, Object> response = new HashMap<>();
         response.put("user", userInfo);
         response.put("message", "Token通过");
         
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<Map<String, Object>> changePassword(
+            @RequestBody ChangePasswordRequest req,
+            HttpServletRequest request) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 从拦截器中获取用户信息
+            String username = (String) request.getAttribute("username");
+
+            
+            if (username == null || username.trim().isEmpty()) {
+                response.put("message", "用户名不能为空");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            
+            // 调用服务层修改密码
+            boolean success = accountService.changePassword(username, req.getOldPassword(), req.getNewPassword());
+            
+            if (success) {
+                response.put("message", "密码修改成功");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.put("message", "密码修改失败");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            
+        } catch (AccountService.InvalidCredentialsException e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        } catch (IllegalArgumentException e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.put("message", "密码修改异常: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

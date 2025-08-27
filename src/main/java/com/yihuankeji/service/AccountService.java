@@ -11,6 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
+
 @Service
 public class AccountService {
 
@@ -113,6 +114,42 @@ public class AccountService {
             user.setPassword(null);
         }
         return user;
+    }
+
+    @Transactional
+    public boolean changePassword(String username, String oldPassword, String newPassword) {
+        // 基本校验
+        if (isBlank(username)) {
+            throw new IllegalArgumentException("用户名不能为空");
+        }
+        if (isBlank(oldPassword)) {
+            throw new IllegalArgumentException("原密码不能为空");
+        }
+        if (isBlank(newPassword)) {
+            throw new IllegalArgumentException("新密码不能为空");
+        }
+        
+        username = username.trim();
+        if (newPassword.length() < 6 || newPassword.length() > 100) {
+            throw new IllegalArgumentException("新密码长度需在6-100之间");
+        }
+        
+        // 查询用户并验证原密码
+        User user = accountMapper.findByUsername(username);
+        if (user == null) {
+            throw new InvalidCredentialsException("用户不存在");
+        }
+        
+        // 验证原密码
+        String hashedOldPassword = sha256Hex(oldPassword);
+        if (!hashedOldPassword.equals(user.getPassword())) {
+            throw new InvalidCredentialsException("原密码错误");
+        }
+        
+        // 更新密码
+        String hashedNewPassword = sha256Hex(newPassword);
+        int result = accountMapper.updatePassword(username, hashedNewPassword);
+        return result > 0;
     }
 
     // 自定义业务异常
